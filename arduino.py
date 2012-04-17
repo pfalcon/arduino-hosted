@@ -69,7 +69,7 @@ port = None
 bus = None
 SPI = None
 
-def arduino_init(_port, **kwargs):
+def init(_port, **kwargs):
     global port, bus, SPI
     port = _port
     bus = BusPirate(port, **kwargs)
