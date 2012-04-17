@@ -1,14 +1,28 @@
 #!/usr/bin/env python
 import sys
+import time
+
 import serial
 
 from buspirate import BusPirate
 
+
 HIGH = 1
 LOW = 0
 
+INPUT = 0
+OUTPUT = 1
+
 LED = 0
 BUTTON = 3
+
+
+def delay(miliseconds):
+    time.sleep(float(miliseconds) / 1000)
+
+def pinMode(pin, mode):
+    # Not implemented so far
+    pass
 
 def digitalWrite(pin, val):
     cmd = "p%s.%s=%s" % (pin / 8 + 1, pin % 8, val)
@@ -20,6 +34,7 @@ def digitalRead(pin):
     resp = bus.get_response()
     assert resp.startswith("READ: "), resp
     return int(resp[-1])
+
 
 class SPIClass:
 
@@ -49,11 +64,23 @@ class SPIClass:
         assert read.startswith("READ: ")
         return int(read[len("READ: "):], 16)
 
+
+port = None
 bus = None
 SPI = None
 
-def arduino_init(port, **kwargs):
-    global bus, SPI
+def arduino_init(_port, **kwargs):
+    global port, bus, SPI
+    port = _port
     bus = BusPirate(port, **kwargs)
     bus.connect()
     SPI = SPIClass(bus)
+
+def run(globals):
+    try:
+        globals["setup"]()
+        while True:
+            globals["loop"]()
+    except:
+        port.read(100)
+        raise
