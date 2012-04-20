@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 import time
+import re
+
 
 class BusPirate:
 
     def __init__(self, serial_port, debug=False):
         self.port = serial_port
         self.debug = debug
-        self.current_prompt = "HiZ"
+        self.current_prompt = None
+
+    def set_mode(self, mode):
+        self.command(mode)
+        self.current_prompt = {"hiz": "HiZ", "spi": "SPI"}[mode]
 
     def connect(self):
         self.port.write("\r")
@@ -24,8 +30,10 @@ class BusPirate:
             l = self.port.read(5)
         else:
             l = l + self.port.read(3)
-        assert l == self.current_prompt + "> ", "Expected command prompt, got:" + `l`
+        assert re.match(r"[A-Za-z]{3}> ", l), "Expected command prompt, got:" + `l`
+        self.current_prompt = l[0:3]
         self.port.write("\r")
+        self.set_mode("hiz")
 
     def write(self, s):
         for c in s:

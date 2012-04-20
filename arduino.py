@@ -42,7 +42,7 @@ class SPIClass:
         self.bus = bus
 
     def begin(self):
-        self.bus.command("spi")
+        self.bus.set_mode("spi")
         # First read byte is hosed, read it up now
         self.bus.command("[r]")
         self.bus.get_response()
