@@ -38,8 +38,7 @@ class BusPirate:
     def write(self, s):
         for c in s:
             self.port.write(c)
-            time.sleep(0.0115)
-#            time.sleep(0.0015)
+            time.sleep(0.0015)
 
     def command(self, s):
         l = self.port.read(5)
