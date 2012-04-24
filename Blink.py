@@ -1,19 +1,17 @@
 #!/usr/bin/env python
-import serial
 import arduino
 
 
-port = serial.Serial('/dev/ttyACM0', 9600, timeout=0.3)
-arduino.init(port, debug=1)
+arduino.init(debug=True)
 from arduino import *
 
 def setup():
     pinMode(LED, OUTPUT)
 
 def loop():
-    digitalWrite(0, HIGH)
+    digitalWrite(LED, HIGH)
     delay(1000)
-    digitalWrite(0, LOW)
+    digitalWrite(LED, LOW)
     delay(1000)
 
 arduino.run(globals())
