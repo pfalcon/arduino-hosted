@@ -22,11 +22,12 @@ def delay(miliseconds):
     time.sleep(float(miliseconds) / 1000)
 
 def pinMode(pin, mode):
-    # Not implemented so far
-    pass
+    cmd = "pinmode p%d %s" % (pin, ["in", "out"][mode])
+    bus.command(cmd)
 
 def digitalWrite(pin, val):
-    cmd = "p%s.%s=%s" % (pin / 8 + 1, pin % 8, val)
+#    cmd = "p%s.%s=%s" % (pin / 8 + 1, pin % 8, val)
+    cmd = "p%d=%d" % (pin, val)
     bus.command(cmd)
 
 def digitalRead(pin):
