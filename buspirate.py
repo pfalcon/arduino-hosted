@@ -63,10 +63,7 @@ class BusPirate:
 
         if self.debug:
             print ">" + `s`
-        #self.port.write(s + "\r")
-        for c in s + "\r":
-            self.port.write(c)
-            time.sleep(0.0015)
+        self.write(s + "\r")
 
     def get_response(self):
         resp = self.port.readline()
