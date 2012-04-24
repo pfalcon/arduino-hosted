@@ -5,28 +5,39 @@ import re
 
 class BusPirate:
 
-    def __init__(self, serial_port, debug=False):
+    def __init__(self, serial_port, debug=False, soft_uart=False):
         self.port = serial_port
         self.debug = debug
+        self.soft_uart = soft_uart
         self.current_prompt = None
 
     def set_mode(self, mode):
         self.command(mode)
         self.current_prompt = {"hiz": "HiZ", "spi": "SPI"}[mode]
 
+    def wait_for_connect(self):
+        # Arduino is reset on each serial device open, and it may take
+        # some time for it to init
+        for i in xrange(400):
+            self.port.write("\r")
+            l = self.port.read(1)
+            if l and l != "\0":
+                return l
+            time.sleep(0.05)
+        raise ValueError("Device doesn't respond")
+
     def connect(self):
-        self.port.write("\r")
-        l = self.port.read(1)
+        l = self.wait_for_connect()
         if l == "\0":
             l = self.port.read(2)
         else:
             l = l + self.port.read(1)
         if l == "\r\n":
             print "Echo detected, turning off"
-            self.write("echo off\r")
+            self.write("echo 0\r")
             l = self.port.readline()
             print `l`
-#            assert l == "echo off\r\n"
+#            assert l == "echo 0\r\n"
             l = self.port.read(5)
         else:
             l = l + self.port.read(3)
@@ -36,9 +47,14 @@ class BusPirate:
         self.set_mode("hiz")
 
     def write(self, s):
-        for c in s:
-            self.port.write(c)
-            time.sleep(0.0015)
+        if self.soft_uart:
+            # Workaround for software uart like in TI Launchpad for example:
+            # send data byte by byte, with delay on our side
+            for c in s:
+                self.port.write(c)
+                time.sleep(0.0015)
+        else:
+            self.port.write(s)
 
     def command(self, s):
         l = self.port.read(5)
