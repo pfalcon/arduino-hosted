@@ -19,32 +19,40 @@ class BusPirate:
         # Arduino is reset on each serial device open, and it may take
         # some time for it to init
         for i in xrange(400):
-            self.port.write("\r")
+            self.write("\r")
             l = self.port.read(1)
+#            print "1:", `l`
             if l and l != "\0":
                 return l
             time.sleep(0.05)
         raise ValueError("Device doesn't respond")
 
     def connect(self):
+      try:
         l = self.wait_for_connect()
         if l == "\0":
             l = self.port.read(2)
         else:
             l = l + self.port.read(1)
+#        print "2:", `l`
         if l == "\r\n":
             print "Echo detected, turning off"
+            print "> echo 0"
             self.write("echo 0\r")
             l = self.port.readline()
-            print `l`
+#            print "3:", `l`
 #            assert l == "echo 0\r\n"
             l = self.port.read(5)
+#            print "4:", `l`
         else:
             l = l + self.port.read(3)
         assert re.match(r"[A-Za-z]{3}> ", l), "Expected command prompt, got:" + `l`
         self.current_prompt = l[0:3]
-        self.port.write("\r")
+        self.write("\r")
         self.set_mode("hiz")
+      except:
+        self.port.read(100)
+        raise
 
     def write(self, s):
         if self.soft_uart:
