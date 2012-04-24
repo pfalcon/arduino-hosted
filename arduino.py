@@ -75,11 +75,11 @@ def get_port():
     return port
 
 def detect_port(**kwargs):
-    return "/dev/ttyUSB0:230400"
+    return "/dev/ttyUSB0:115200"
 #    raise NotImplementedError("Port detection not implemented, please set BUSNINJA_PORT")
 
 def init(**kwargs):
-    global port, bus, SPI
+    global port, bus, SPI, dev_type, LED
     port = kwargs.get('port')
 
     if port is None:
@@ -105,6 +105,11 @@ def init(**kwargs):
         else:
             raise ValueError("Invalid syntax for BUSNINJA_PORT: expected [<device_type>:]/dev/<serial>[:<baud>]")
         port = serial.Serial(port_str, baud, timeout=0.3)
+        if not dev_type:
+            dev_type = "arduino"
+
+        if dev_type == "arduino":
+            LED = 13
 
     bus = BusPirate(port, **kwargs)
     bus.connect()
