@@ -148,6 +148,9 @@ class Arduino:
         assert resp.startswith("READ: "), resp
         return int(resp[-1])
 
+    def digitalPulse_us(self, pin, val, delay_us):
+        cmd = "p%d=%d &:%d p%d=%d" % (pin, val, delay_us, pin, not val)
+        self.bus.command(cmd)
 
 
 def get_port():
