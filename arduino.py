@@ -165,6 +165,11 @@ class Arduino:
         drained"""
         self.port.read(100)
 
+
+    def millis(self):
+        return int(time.time() * 1000)
+
+
     def delay(self, miliseconds):
         time.sleep(float(miliseconds) / 1000)
 
