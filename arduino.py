@@ -148,7 +148,7 @@ class Arduino:
             while True:
                 loop()
         except:
-            self.port.read(100)
+            self.drain()
             raise
 
     def run_func(self, func):
@@ -158,6 +158,12 @@ class Arduino:
             self.port.read(100)
             raise
 
+    def drain(self):
+        """Some boards have bugs which may cause them misbehave if some
+        'cleanup' is not performed after usage, e.g. TI Launchpad's USB
+        connection may hang due to output buffer overflow if it's not
+        drained"""
+        self.port.read(100)
 
     def delay(self, miliseconds):
         time.sleep(float(miliseconds) / 1000)
