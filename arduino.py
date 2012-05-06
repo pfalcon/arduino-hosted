@@ -111,6 +111,8 @@ class Arduino:
                 self.board_config[k] = v
         return self.board_config.get(board)
 
+    def get_board_type(self):
+        return self.board_type
 
     def run(self, app):
         try:
