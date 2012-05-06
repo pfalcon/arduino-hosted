@@ -195,9 +195,6 @@ class Arduino:
 
 
 default_arduino = None
-LED = None
-SPI = None
-Serial = None
 
 
 def create_proxy_func(func_name, obj):
@@ -209,15 +206,14 @@ def create_proxy_func(func_name, obj):
 
 
 def init(*args, **kwargs):
-    global default_arduino, LED, SPI, Serial
+    global default_arduino
     default_arduino = Arduino(*args, **kwargs)
-    LED = default_arduino.LED
-    SPI = default_arduino.SPI
-    Serial = default_arduino.Serial
-    create_proxy_func("run", default_arduino)
-    create_proxy_func("delay", default_arduino)
-    create_proxy_func("pinMode", default_arduino)
-    create_proxy_func("digitalWrite", default_arduino)
+    globs = ["LED", "SPI", "Serial"]
+    for g in globs:
+        globals()[g] = getattr(default_arduino, g)
+    methods = ["run", "millis", "delay", "pinMode", "digitalRead", "digitalWrite"]
+    for m in methods:
+        create_proxy_func(m, default_arduino)
 
 
 def default_board():
