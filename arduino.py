@@ -101,6 +101,10 @@ class Arduino:
         self.Serial = SerialMockClass()
 
 
+    def detect_board(self):
+        return "arduino:/dev/ttyUSB0:115200"
+
+
     def parse_port_spec(self, port_spec):
         arr = port_spec.split(":")
         dev_type = None
