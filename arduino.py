@@ -190,8 +190,9 @@ class Arduino:
 
 
 default_arduino = None
-SPI = None
 LED = None
+SPI = None
+Serial = None
 
 
 def create_proxy_func(func_name, obj):
@@ -203,9 +204,11 @@ def create_proxy_func(func_name, obj):
 
 
 def init(*args, **kwargs):
-    global default_arduino, LED
+    global default_arduino, LED, SPI, Serial
     default_arduino = Arduino(*args, **kwargs)
     LED = default_arduino.LED
+    SPI = default_arduino.SPI
+    Serial = default_arduino.Serial
     create_proxy_func("run", default_arduino)
     create_proxy_func("delay", default_arduino)
     create_proxy_func("pinMode", default_arduino)
