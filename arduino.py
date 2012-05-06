@@ -49,6 +49,25 @@ class SPIClass:
         return int(read[len("READ: "):], 16)
 
 
+class SerialMockClass:
+
+    def __init__(self):
+        pass
+
+    def begin(self, baud):
+        pass
+
+    def print(self, data, format=None):
+        if not format:
+            sys.stdout.write(data)
+        elif format == HEX:
+            sys.stdout.write(hex(data))
+
+    def println(self, data, format=None):
+        self.print(data, format)
+        print
+
+
 class Arduino:
 
     def __init__(self, port=None, board=None, debug=False):
@@ -79,6 +98,7 @@ class Arduino:
         self.bus = BusPirate(self.port, soft_uart=soft_uart, debug=debug)
         self.bus.connect()
         self.SPI = SPIClass(self.bus)
+        self.Serial = SerialMockClass()
 
 
     def parse_port_spec(self, port_spec):
