@@ -57,14 +57,14 @@ class SerialMockClass:
     def begin(self, baud):
         pass
 
-    def print(self, data, format=None):
+    def print_(self, data, format=None):
         if not format:
             sys.stdout.write(data)
         elif format == HEX:
             sys.stdout.write(hex(data))
 
     def println(self, data, format=None):
-        self.print(data, format)
+        self.print_(data, format)
         print
 
 
