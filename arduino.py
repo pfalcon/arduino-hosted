@@ -14,11 +14,6 @@ LOW = 0
 INPUT = 0
 OUTPUT = 1
 
-LED = 0
-BUTTON = 3
-
-
-
 
 class SPIClass:
 
@@ -138,11 +133,20 @@ class Arduino:
     def get_board_type(self):
         return self.board_type
 
-    def run(self, app):
+    def run(self, obj):
+        if type(obj) == type({}):
+            # globals dict
+            setup = obj["setup"]
+            loop = obj["loop"]
+        else:
+            # app object
+            setup = obj.setup
+            loop = obj.loop
+
         try:
-            app.setup()
+            setup()
             while True:
-                app.loop()
+                loop()
         except:
             self.port.read(100)
             raise
@@ -179,11 +183,24 @@ class Arduino:
         self.bus.command(cmd)
 
 
-def run(globals):
-    try:
-        globals["setup"]()
-        while True:
-            globals["loop"]()
-    except:
-        port.read(100)
-        raise
+default_arduino = None
+SPI = None
+LED = None
+
+
+def create_proxy_func(func_name, obj):
+    """Create global function named func_name which will
+    call method of the same name of obj."""
+    method = getattr(obj, func_name)
+    f = lambda *args: method(*args)
+    globals()[func_name] = f
+
+
+def init(*args, **kwargs):
+    global default_arduino, LED
+    default_arduino = Arduino(*args, **kwargs)
+    LED = default_arduino.LED
+    create_proxy_func("run", default_arduino)
+    create_proxy_func("delay", default_arduino)
+    create_proxy_func("pinMode", default_arduino)
+    create_proxy_func("digitalWrite", default_arduino)
