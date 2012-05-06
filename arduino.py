@@ -54,7 +54,10 @@ class SerialMockClass:
 
     def print_(self, data, format=None):
         if not format:
-            sys.stdout.write(data)
+            if type(data) != type(""):
+                sys.stdout.write(str(data))
+            else:
+                sys.stdout.write(data)
         elif format == HEX:
             sys.stdout.write(hex(data))
 
