@@ -170,7 +170,7 @@ class Arduino:
 
 
     def millis(self):
-        return int(time.time() * 1000)
+        return int(time.time() * 1000) & 0xffffffff
 
 
     def delay(self, miliseconds):
