@@ -210,3 +210,8 @@ def init(*args, **kwargs):
     create_proxy_func("delay", default_arduino)
     create_proxy_func("pinMode", default_arduino)
     create_proxy_func("digitalWrite", default_arduino)
+
+
+def default_board():
+    global default_arduino
+    return default_arduino
