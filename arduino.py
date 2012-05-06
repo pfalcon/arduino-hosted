@@ -175,51 +175,6 @@ class Arduino:
         self.bus.command(cmd)
 
 
-def get_port():
-    global port
-    return port
-
-def detect_port(**kwargs):
-    return "/dev/ttyUSB0:115200"
-#    raise NotImplementedError("Port detection not implemented, please set BUSNINJA_PORT")
-
-def init(**kwargs):
-    global port, bus, SPI, dev_type, LED
-    port = kwargs.get('port')
-
-    if port is None:
-        port_spec = os.environ.get("BUSNINJA_PORT")
-        if not port_spec:
-            port_spec = detect_port(**kwargs)
-        arr = port_spec.split(":")
-        dev_type = None
-        baud = 9600
-        if len(arr) == 1:
-            port_str = arr[0]
-        elif len(arr) == 2:
-            try:
-                baud = int(arr[1])
-                port_str = arr[0]
-            except ValueError:
-                dev_type = arr[0]
-                port_str = arr[1]
-        elif len(arr) == 3:
-                dev_type = arr[0]
-                port_str = arr[1]
-                baud = int(arr[2])
-        else:
-            raise ValueError("Invalid syntax for BUSNINJA_PORT: expected [<device_type>:]/dev/<serial>[:<baud>]")
-        port = serial.Serial(port_str, baud, timeout=0.3)
-        if not dev_type:
-            dev_type = "arduino"
-
-        if dev_type == "arduino":
-            LED = 13
-
-    bus = BusPirate(port, **kwargs)
-    bus.connect()
-    SPI = SPIClass(bus)
-
 def run(globals):
     try:
         globals["setup"]()
