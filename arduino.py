@@ -137,7 +137,10 @@ class Arduino:
         return self.board_type
 
     def run(self, obj):
-        if type(obj) == type({}):
+        if type(obj) == type(lambda: None):
+            setup = obj
+            loop = None
+        elif type(obj) == type({}):
             # globals dict
             setup = obj["setup"]
             loop = obj["loop"]
@@ -148,8 +151,9 @@ class Arduino:
 
         try:
             setup()
-            while True:
-                loop()
+            if loop:
+                while True:
+                    loop()
         except:
             self.drain()
             raise
