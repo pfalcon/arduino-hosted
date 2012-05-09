@@ -197,6 +197,9 @@ class Arduino:
         return int(resp[-1])
 
     def digitalPulse_us(self, pin, val, delay_us):
+        """Make pulse of not less than specified microsecond duration on a pin
+        (exact duration may be longer per limitations of a specific board).
+        """
         cmd = "p%d=%d &:%d p%d=%d" % (pin, val, delay_us, pin, not val)
         self.bus.command(cmd)
 
