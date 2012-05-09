@@ -221,7 +221,10 @@ def init(*args, **kwargs):
     globs = ["LED", "SPI", "Serial"]
     for g in globs:
         globals()[g] = getattr(default_arduino, g)
-    methods = ["run", "millis", "delay", "pinMode", "digitalRead", "digitalWrite"]
+    methods = [
+        "run", "millis", "delay", "pinMode", "digitalRead", "digitalWrite",
+        "digitalPulse_us"
+    ]
     for m in methods:
         create_proxy_func(m, default_arduino)
 
