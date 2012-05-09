@@ -1,0 +1,92 @@
+Arduino Hosted Python module
+============================
+
+This Python module provides Arduino-like API to control a microcontroller
+development board via firmware running on a board and accepting/executing
+commands from a host computer.
+
+As the protocol, extended BusPirate-like text protocol is used, as
+implemented by following projects:
+
+https://github.com/pfalcon/bus-ninja
+https://github.com/pfalcon/spi-explorer
+
+(both projects are forks of corresponding projects by Joby Taffey,
+http://blog.hodgepig.org/busninja/)
+
+The projects above support Arduino variants and other AVR-based boards,
+and TI Launchpad (and possibly other MSP430-based boards), consequently
+Arduino Hosted also supports these boards.
+
+The module supports original functional-style Arduino API, as well as
+object-oriented API, which allows for example to interface with 2 or
+more board simultaneously (which is useful for experimenting with radio
+modules for example).
+
+
+Usage
+=====
+
+There are number examples provided to show usage. Let's analyze Blink.py
+closer:
+
+    import arduino
+    arduino.init(debug=True)
+    from arduino import *
+
+It should be done like that: first import module into its own namespace, and
+initialize it, and only then import symbols into your own namespace. That's
+because definitions of some symbols (e.g. LED) are board-dependent, so they
+are initialized only in init() method. Such trick is needed only for functional
+API. One advantage of OO API is that proper dependency injection is done
+explicitly.
+
+    def setup():
+        pinMode(LED, OUTPUT)
+
+Standard Arduino API setup handler function. LED is defined to pin connected
+to LED on a specific board (pin13 on Arduino, p1.0 on TI Launchpad, etc.).
+
+    def loop():
+        digitalWrite(LED, HIGH)
+        delay(1000)
+        digitalWrite(LED, LOW)
+        delay(1000)
+
+Standard loop handler.
+
+    arduino.run(globals())
+
+This is another idiom how to actually start execution of the code (again, etc.
+slightly different for OO API).
+
+
+FAQ
+===
+
+Q: Why BusPirate text underlying protocol is used?
+A: The main purpose of this project was to help (beginners first of all)
+to explore Arduino, other boards, and new chips/modules/shields connected
+to them. The idea is that someone starts exploring using direct terminal
+mode of BusPirate and when feels like wanting to program it, switches to
+Arduino Hosted, while still being able to have easy insight of what's
+going behind the scenes (by activating debug mode). In this respect,
+both BusPirate protocol and Arduino API are well-established and
+easy-to-use interfaces.
+
+Q: BusPirate also has binary protocol...
+A: Human readability/writability of underlying protocol was the original
+requirement for this library, see above question. Of course, soon I faced
+problems due to that, in particular with TI Launchpad, which has poor UART
+interface implementation. But BusNinja doesn't implement binary protocol.
+Also, BusPirate has inherent limitation - it allows to use only one bus
+at a time. So, something more scalable would be required anyway.
+
+Q: Why not Firmata?
+A: To start with, immediate need for this lib was to interface with SPI
+devices, and at the time of writing, Firmata didn't support it, which already
+hints on usefulness of that "universal" protocol. But looking closer,
+Firmata is example of very poor design. You immediately get an idea that it
+was designed by someone lacking experience (or someone very well mimicking
+lack of experience), and trying to stuff completely unrelated things into
+MIDI protocol, as if it was the only protocol in existence.
