@@ -1,19 +1,24 @@
 #!/usr/bin/env python
+"""
+Version of Blink.py using object-oriented board API.
+"""
 import arduino
 from arduino import *
 
 
-a = arduino.Arduino(debug=True)
-
 class App:
+    def __init__(self, board):
+        self.b = board
+
     def setup(self):
-        a.pinMode(a.LED, OUTPUT)
+        self.b.pinMode(self.b.LED, OUTPUT)
 
     def loop(self):
-        a.digitalWrite(a.LED, HIGH)
-        a.delay(1000)
-        a.digitalWrite(a.LED, LOW)
-        a.delay(1000)
+        self.b.digitalWrite(self.b.LED, HIGH)
+        self.b.delay(1000)
+        self.b.digitalWrite(self.b.LED, LOW)
+        self.b.delay(1000)
 
 
-a.run(App())
+board = arduino.Arduino(debug=True)
+board.run(App(board))
