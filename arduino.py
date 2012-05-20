@@ -70,6 +70,7 @@ class SerialMockClass:
 class Arduino:
 
     def __init__(self, port=None, board=None, debug=False):
+        self.board = board
         self.board_config = None
         self.port = port
         self.board_type = None
@@ -129,6 +130,12 @@ class Arduino:
 
     def get_board_type(self):
         return self.board_type
+
+    def get_board_setting(self, option):
+        return self.board_config.get(self.board, option)
+
+    def get_board_int(self, option):
+        return self.board_config.getint(self.board, option)
 
     def run(self, obj):
         if type(obj) == type(lambda: None):
