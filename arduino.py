@@ -2,6 +2,7 @@
 import sys
 import os
 import time
+import ConfigParser
 
 import serial
 
@@ -74,7 +75,9 @@ class Arduino:
         self.board_type = None
         if self.port is None:
             if board:
-                port_spec = self.get_board_config(board)
+                self.board_config = ConfigParser.ConfigParser()
+                self.board_config.read("board.cfg")
+                port_spec = self.board_config.get(board, "connection")
             elif "BUSNINJA_PORT" in os.environ:
                 port_spec  = os.environ["BUSNINJA_PORT"]
             else:
@@ -123,15 +126,6 @@ class Arduino:
         else:
             raise ValueError("Invalid syntax for BUSNINJA_PORT: expected [<device_type>:]/dev/<serial>[:<baud>]")
         return board_type, port_str, baud
-
-    def get_board_config(self, board):
-        if self.board_config is None:
-            self.board_config = {}
-            f = open("board.cfg")
-            for l in f:
-                k, v = [s.strip() for s in l.split("=", 1)]
-                self.board_config[k] = v
-        return self.board_config.get(board)
 
     def get_board_type(self):
         return self.board_type
