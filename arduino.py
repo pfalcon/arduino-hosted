@@ -81,6 +81,12 @@ class Arduino:
                 port_spec = self.board_config.get(board, "connection")
             elif "BUSNINJA_PORT" in os.environ:
                 port_spec  = os.environ["BUSNINJA_PORT"]
+            elif os.path.exists("board.cfg"):
+                self.board_config = ConfigParser.ConfigParser()
+                self.board_config.read("board.cfg")
+                self.board = self.board_config.sections()[0]
+                port_spec = self.board_config.get(self.board, "connection")
+                print "Warning: using first board defined in board.cfg"
             else:
                 port_spec = self.detect_board()
 
